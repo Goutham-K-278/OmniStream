@@ -8,6 +8,8 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import metricsRegistry, { httpRequestDuration } from "./metrics";
+
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -34,6 +36,25 @@ async function startServer() {
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+  // ---- Prometheus: Track HTTP request durations ----
+  app.use((req, res, next) => {
+    const end = httpRequestDuration.startTimer({
+      method: req.method,
+      route: req.path,
+    });
+    res.on("finish", () => {
+      end({ status_code: res.statusCode });
+    });
+    next();
+  });
+
+  // ---- Prometheus: /metrics endpoint (scraped by Prometheus every 15s) ----
+  app.get("/metrics", async (_req, res) => {
+    res.set("Content-Type", metricsRegistry.contentType);
+    res.end(await metricsRegistry.metrics());
+  });
+
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   // tRPC API

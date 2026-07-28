@@ -10,6 +10,8 @@ import {
   ingestLogEntry,
 } from "../db";
 import type { IngestTelemetryInput, IngestLogInput } from "../../shared/types";
+import { telemetryEventsTotal, logEntriesTotal, errorRateGauge } from "../_core/metrics";
+
 
 /**
  * Input validation schemas
@@ -115,6 +117,13 @@ export const stressTestRouter = router({
         }
 
         const duration = Date.now() - startTime;
+
+        // ---- Update Prometheus metrics so Grafana shows the spike ----
+        telemetryEventsTotal.inc({ source: "stress-test", metric_name: "bulk" }, eventsGenerated);
+        logEntriesTotal.inc({ source: "stress-test", level: "mixed" }, logsGenerated);
+        // Update error rate: errors as % of total generated
+        const total = eventsGenerated + logsGenerated;
+        errorRateGauge.set(total > 0 ? (errors / total) * 100 : 0);
 
         return {
           success: true,

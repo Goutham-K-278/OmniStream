@@ -2,3 +2,25 @@
 # For production, use a strong password or a Kubernetes Secret.
 grafana:
   adminPassword: admin
+  # Pre-load the OmniStream dashboard automatically on startup
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: omnistream
+          orgId: 1
+          folder: OmniStream
+          type: file
+          options:
+            path: /var/lib/grafana/dashboards/omnistream
+
+prometheus:
+  prometheusSpec:
+    # Tell Prometheus to scrape the OmniStream app's /metrics endpoint
+    additionalScrapeConfigs:
+      - job_name: omnistream-app
+        scrape_interval: 15s
+        static_configs:
+          - targets:
+              - omnistream-service.default.svc.cluster.local:80
+        metrics_path: /metrics
