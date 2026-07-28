@@ -1,0 +1,4 @@
+# NOTE: This sets a simple password for easy demo access.
+# For production, use a strong password or a Kubernetes Secret.
+grafana:
+  adminPassword: admin

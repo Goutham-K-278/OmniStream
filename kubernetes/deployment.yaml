@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: omnistream-app
+  labels:
+    app: omnistream
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: omnistream
+  template:
+    metadata:
+      labels:
+        app: omnistream
+    spec:
+      containers:
+      - name: omnistream
+        image: goutham02272006/omnistream:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: PORT
+          value: "3000"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: omnistream-service
+spec:
+  type: ClusterIP
+  selector:
+    app: omnistream
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
