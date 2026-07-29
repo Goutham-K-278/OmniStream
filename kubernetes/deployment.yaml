@@ -5,7 +5,7 @@ metadata:
   labels:
     app: omnistream
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: omnistream
@@ -22,6 +22,14 @@ spec:
         env:
         - name: PORT
           value: "3000"
+        - name: NODE_ENV
+          value: "production"
+        - name: OAUTH_SERVER_URL
+          value: "http://localhost"
+        - name: DATABASE_URL
+          value: ""
+        - name: SESSION_SECRET
+          value: "omnistream-demo-secret-key-2024"
         resources:
           requests:
             cpu: "100m"
