@@ -6,57 +6,63 @@
       .cluster-box { fill: none; stroke: #8b949e; stroke-width: 2; stroke-dasharray: 8,8; rx: 12px; }
       .text-title { fill: #c9d1d9; font-family: system-ui, sans-serif; font-size: 18px; font-weight: bold; }
       .text-sub { fill: #8b949e; font-family: system-ui, sans-serif; font-size: 14px; }
-      .text-label { fill: #58a6ff; font-family: system-ui, sans-serif; font-size: 13px; font-weight: 500; }
+      .text-label { fill: #58a6ff; font-family: system-ui, sans-serif; font-size: 14px; font-weight: 500; }
       .line { fill: none; stroke: #58a6ff; stroke-width: 2; marker-end: url(#arrow); }
-      .line-scrape { stroke: #3fb950; marker-end: url(#arrow-scrape); stroke-dasharray: 4,4; }
-      .text-scrape { fill: #3fb950; }
+      .line-scrape { stroke: #3fb950; marker-end: url(#arrow-scrape); stroke-dasharray: 6,4; }
+      .text-scrape { fill: #3fb950; font-family: system-ui, sans-serif; font-size: 14px; font-weight: 500; }
     </style>
+    
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#58a6ff" />
     </marker>
+    
     <marker id="arrow-scrape" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#3fb950" />
     </marker>
+
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
   </defs>
 
   <!-- Background -->
   <rect width="1000" height="680" class="bg" />
 
   <!-- EKS Cluster Boundary -->
-  <rect x="300" y="220" width="650" height="400" class="cluster-box" />
+  <rect x="300" y="220" width="650" height="380" class="cluster-box" />
   <text x="320" y="255" class="text-title" fill="#8b949e">AWS EKS Cluster (Provisioned by Terraform)</text>
 
   <!-- Nodes -->
   <!-- Developer -->
-  <rect x="50" y="80" width="200" height="80" class="box" />
+  <rect x="50" y="80" width="200" height="80" class="box" filter="url(#shadow)" />
   <text x="150" y="125" class="text-title" text-anchor="middle">Developer</text>
 
   <!-- GitHub Actions -->
-  <rect x="350" y="80" width="200" height="80" class="box" />
+  <rect x="350" y="80" width="200" height="80" class="box" filter="url(#shadow)" />
   <text x="450" y="115" class="text-title" text-anchor="middle">GitHub Actions</text>
   <text x="450" y="140" class="text-sub" text-anchor="middle">CI/CD Pipeline</text>
 
   <!-- Docker Hub -->
-  <rect x="700" y="80" width="200" height="80" class="box" />
+  <rect x="700" y="80" width="200" height="80" class="box" filter="url(#shadow)" />
   <text x="800" y="115" class="text-title" text-anchor="middle">Docker Hub</text>
   <text x="800" y="140" class="text-sub" text-anchor="middle">Image Registry</text>
 
   <!-- Users -->
-  <rect x="50" y="380" width="200" height="80" class="box" />
+  <rect x="50" y="380" width="200" height="80" class="box" filter="url(#shadow)" />
   <text x="150" y="425" class="text-title" text-anchor="middle">End Users</text>
 
   <!-- Ingress NGINX -->
-  <rect x="350" y="380" width="200" height="80" class="box" />
+  <rect x="350" y="380" width="200" height="80" class="box" filter="url(#shadow)" />
   <text x="450" y="415" class="text-title" text-anchor="middle">Ingress NGINX</text>
   <text x="450" y="440" class="text-sub" text-anchor="middle">Load Balancer</text>
 
   <!-- OmniStream App -->
-  <rect x="700" y="280" width="200" height="80" class="box" />
+  <rect x="700" y="280" width="200" height="80" class="box" filter="url(#shadow)" />
   <text x="800" y="315" class="text-title" text-anchor="middle">OmniStream App</text>
   <text x="800" y="340" class="text-sub" text-anchor="middle">React + Node.js Pods</text>
 
   <!-- Prometheus & Grafana -->
-  <rect x="700" y="480" width="200" height="80" class="box" />
+  <rect x="700" y="480" width="200" height="80" class="box" filter="url(#shadow)" />
   <text x="800" y="515" class="text-title" text-anchor="middle">kube-prometheus</text>
   <text x="800" y="540" class="text-sub" text-anchor="middle">Monitoring Stack</text>
 
@@ -72,22 +78,22 @@
 
   <!-- Docker Hub to EKS App -->
   <path d="M 800 160 L 800 270" class="line" />
-  <text x="810" y="220" class="text-label">Pull Image</text>
+  <text x="815" y="220" class="text-label">Pull Image</text>
 
   <!-- Users to Ingress -->
   <path d="M 250 420 L 340 420" class="line" />
   <text x="295" y="410" class="text-label" text-anchor="middle">HTTP Traffic</text>
 
-  <!-- Ingress to App -->
-  <path d="M 550 400 L 700 340" class="line" />
-  <text x="610" y="360" class="text-label" transform="rotate(-21 610 360)">Route ( / )</text>
+  <!-- Ingress to App (Orthogonal Routing) -->
+  <path d="M 550 420 L 600 420 Q 610 420 610 410 L 610 330 Q 610 320 620 320 L 690 320" class="line" />
+  <text x="655" y="310" class="text-label" text-anchor="middle">Route ( / )</text>
 
-  <!-- Ingress to Monitoring -->
-  <path d="M 550 440 L 700 500" class="line" />
-  <text x="610" y="485" class="text-label" transform="rotate(21 610 485)">Route ( /grafana )</text>
+  <!-- Ingress to Monitoring (Orthogonal Routing) -->
+  <path d="M 550 420 L 600 420 Q 610 420 610 430 L 610 510 Q 610 520 620 520 L 690 520" class="line" />
+  <text x="655" y="510" class="text-label" text-anchor="middle">Route ( /grafana )</text>
 
   <!-- Prometheus scraping App -->
-  <path d="M 750 480 L 750 370" class="line line-scrape" />
-  <text x="760" y="430" class="text-label text-scrape">Scrape /metrics</text>
+  <path d="M 800 480 L 800 370" class="line line-scrape" />
+  <text x="815" y="430" class="text-scrape">Scrape /metrics</text>
 
 </svg>
