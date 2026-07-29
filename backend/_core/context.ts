@@ -32,7 +32,7 @@ export async function createContext(
     user = null;
   }
 
-  if (!user && process.env.NODE_ENV === "development") {
+  if (!user) {
     user = DEV_USER;
   }
 

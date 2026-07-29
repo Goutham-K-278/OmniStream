@@ -35,7 +35,10 @@ alertmanager:
 
 # Disable heavy node exporters to save resources
 nodeExporter:
-  enabled: true
+  enabled: false
+
+kubeStateMetrics:
+  enabled: false
   resources:
     requests:
       memory: "32Mi"
