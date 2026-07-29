@@ -6,6 +6,8 @@ metadata:
     app: omnistream
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: omnistream
@@ -47,6 +49,7 @@ spec:
   selector:
     app: omnistream
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
       targetPort: 3000

@@ -1,90 +1,78 @@
-# OmniStream 🚀
+# OmniStream
 
-A real-time telemetry and log ingestion platform deployed on AWS EKS with full CI/CD automation.
+[View Demo Video](https://drive.google.com/file/d/1s7NaZDYYzLVXpFAdhtdBvqhW1FJJkjEZ/view?usp=sharing)
+
+## About the Project
+OmniStream is a robust, full-stack web application designed to operate on a highly available Kubernetes cluster. It leverages modern web technologies paired with infrastructure-as-code to provide a scalable, monitoring-ready ecosystem. The project emphasizes automation, integrating continuous integration pipelines with automated cloud provisioning to ensure reliable deployments and real-time observability under heavy traffic loads.
+
+## Features
+- **Modern Frontend**: React-based dashboard built with Vite, Tailwind CSS, and Recharts for dynamic data visualization.
+- **Type-Safe Backend**: Node.js and Express API utilizing an in-memory datastore for rapid resilience, fully typed from end-to-end using TRPC.
+- **Infrastructure as Code**: Automated AWS Elastic Kubernetes Service (EKS) cluster provisioning using Terraform.
+- **Container Orchestration**: Deployed securely on Kubernetes with Ingress NGINX handling reliable traffic routing and load balancing.
+- **Observability Stack**: Integrated Prometheus and Grafana stack configured via Helm to scrape and visualize live application metrics.
+- **CI/CD Automation**: GitHub Actions pipeline for automated Docker image building and registry publishing directly to Docker Hub.
 
 ## Architecture
+![OmniStream Architecture](architecture.svg)
 
-```
-[ You push code ] → [ GitHub Actions CI/CD ]
-                           │
-                    ┌──────┴──────┐
-                    ▼             ▼
-             [Docker Hub]    [AWS EKS]
-           (New image built) (Auto-deployed)
-                    │
-          [ AWS NLB (Load Balancer) ]
-                    │
-          [ Nginx Ingress Controller ]
-                    │
-           [ OmniStream App Pods ]
-                    │
-          [ Prometheus + Grafana ]
-             (Monitoring & Alerts)
-```
+## Bugs and Errors Faced
+During the development and deployment of OmniStream, several complex infrastructure, capacity, and scaling issues were encountered and resolved. A comprehensive log of these challenges and their precise solutions can be found in the attached documentation:
 
-## Tech Stack
+[View the Bugs and Errors Log](errorfix.md)
 
-| Layer | Technology |
-|---|---|
-| Frontend | React, TypeScript, tRPC |
-| Backend | Node.js, Express, Drizzle ORM |
-| Database | MySQL |
-| Containerization | Docker |
-| Orchestration | Kubernetes (AWS EKS) |
-| Infrastructure | Terraform |
-| Monitoring | Prometheus + Grafana (via Helm) |
-| CI/CD | GitHub Actions |
+## How to Clone and Use
 
-## Project Phases
+### Prerequisites
+- Docker
+- AWS CLI configured with appropriate credentials
+- Terraform CLI
+- kubectl and Helm
 
-- **Phase 1** ✅ Docker — Containerized with multi-stage build
-- **Phase 2** ✅ AWS Infra — VPC, EKS, Node Groups via Terraform
-- **Phase 3** ✅ Kubernetes — Deployment, Service, Ingress YAML
-- **Phase 4** ✅ Observability — Prometheus & Grafana via Helm
-- **Phase 5** ✅ CI/CD — Automated Docker build & EKS deploy via GitHub Actions
+### Installation Steps
 
-## Repository Structure
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Goutham-K-278/OmniStream.git
+   cd OmniStream
+   ```
 
-```
-.
-├── backend/          # Node.js/tRPC API server
-├── frontend/         # React dashboard UI
-├── shared/           # Shared types between frontend & backend
-├── drizzle/          # Database schema and migrations
-├── terraform/        # AWS infrastructure (VPC, EKS)
-├── kubernetes/       # K8s Deployment, Service, Ingress
-├── .github/
-│   └── workflows/
-│       └── deploy.yaml  # CI/CD pipeline
-└── Dockerfile
-```
+2. **Provision the Infrastructure:**
+   Navigate to the terraform directory and apply the configuration to spin up the EKS cluster.
+   ```bash
+   cd terraform
+   terraform init
+   terraform apply
+   ```
 
-## Required GitHub Secrets
+3. **Configure Kubernetes Access:**
+   Link your local machine to the newly created EKS cluster.
+   ```bash
+   aws eks update-kubeconfig --region us-east-1 --name omnistream-cluster
+   ```
 
-For the CI/CD pipeline to work, add these in GitHub → Settings → Secrets → Actions:
+4. **Deploy the Ingress Controller:**
+   Install the NGINX Ingress controller to handle incoming traffic.
+   ```bash
+   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/aws/deploy.yaml
+   ```
 
-| Secret Name | Description |
-|---|---|
-| `DOCKERHUB_USERNAME` | Your Docker Hub username |
-| `DOCKERHUB_TOKEN` | Docker Hub Access Token |
-| `AWS_ACCESS_KEY_ID` | AWS IAM User Access Key |
-| `AWS_SECRET_ACCESS_KEY` | AWS IAM User Secret Key |
+5. **Deploy the Monitoring Stack:**
+   Use Helm to install Prometheus and Grafana for live metrics tracking.
+   ```bash
+   helm install monitoring prometheus-community/kube-prometheus-stack -f kubernetes/prometheus-values.yaml
+   ```
 
-## Demo Day Workflow
+6. **Deploy the Application:**
+   Apply the Kubernetes deployment, service, and ingress routing rules.
+   ```bash
+   cd ..
+   kubectl apply -f kubernetes/deployment.yaml
+   kubectl apply -f kubernetes/ingress.yaml
+   ```
 
-```bash
-# 1. Spin up infrastructure
-cd terraform && terraform apply
-
-# 2. Connect kubectl to your cluster
-aws eks update-kubeconfig --name omnistream-cluster --region us-east-1
-
-# 3. Deploy OmniStream
-kubectl apply -f kubernetes/
-
-# 4. Deploy Prometheus + Grafana
-helm install monitoring prometheus-community/kube-prometheus-stack -f kubernetes/prometheus-values.yaml
-
-# 5. After demo - destroy everything to avoid charges!
-terraform destroy
-```
+7. **Access the Application:**
+   Retrieve the external address of the Load Balancer and navigate to it in your web browser.
+   ```bash
+   kubectl get ingress
+   ```
